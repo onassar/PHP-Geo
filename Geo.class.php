@@ -59,7 +59,6 @@
         protected static function _getIP()
         {
             if (is_null(self::$_ip)) {
-return '173.32.155.180';
                 return $_SERVER['REMOTE_ADDR'];
             }
             return self::$_ip;
