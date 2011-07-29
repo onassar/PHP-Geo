@@ -3,7 +3,6 @@
     /**
      * Abstract Geo class. Wrapper for GeoIP lookup service (using binary file).
      * 
-     * @todo test getZip
      * @note The GeoIP PHP extension handles errors in a bizarre way (see:
      *     http://pecl.php.net/bugs/bug.php?id=22691). While the functions do
      *     have return values, notices are thrown if the IP being checked cannot
