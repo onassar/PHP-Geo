@@ -1,5 +1,10 @@
 <?php
 
+    // dependecy checks
+    if (!in_array('geoip', get_loaded_extensions())) {
+        throw new Exception('GeoIP extension needs to be installed.');
+    }
+
     /**
      * Geo
      * 
