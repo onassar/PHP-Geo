@@ -1,17 +1,26 @@
 <?php
 
     /**
-     * Abstract Geo class. Wrapper for GeoIP lookup service (using binary file).
+     * Geo
      * 
-     * @note The GeoIP PHP extension handles errors in a bizarre way (see:
-     *     http://pecl.php.net/bugs/bug.php?id=22691). While the functions do
-     *     have return values, notices are thrown if the IP being checked cannot
-     *     be found. Thus, the magic method __callStatic is used as a wrapper
-     *     for all getters. Therefore looking at the class signature, getters
-     *     are set as protected. All classes that do *not* lead with an
-     *     underscore are therefore safe to access, regardless of their defined
-     *     scope.
+     * Wrapper for GeoIP lookup service (using binary file).
+     * 
+     * @author   Oliver Nassar <onassar@gmail.com
      * @abstract
+     * @notes    The GeoIP PHP extension handles errors in a bizarre way (see:
+     *           http://pecl.php.net/bugs/bug.php?id=22691). While the functions
+     *           do have return values, notices are thrown if the IP being
+     *           checked cannot be found. Thus, the magic method __callStatic is
+     *           used as a wrapper for all getters. Therefore looking at the
+     *           class signature, getters are set as protected. All classes that
+     *           do *not* lead with an underscore are therefore safe to access,
+     *           regardless of their defined scope.
+     * @example
+     * <code>
+     *     require_once APP . '/vendors/PHP-Geo/Geo.class.php';
+     *     echo Geo::getCity() . ', ' . Geo::getCountry();
+     *     exit(0);
+     * </code>
      */
     abstract class Geo
     {
@@ -32,6 +41,34 @@
          * @static
          */
         protected static $_record;
+
+        /**
+         * __callStatic function.
+         * 
+         * @access public
+         * @static
+         * @param string $name
+         * @param array $arguments
+         * @return void
+         */
+        public static function __callStatic($name, $arguments)
+        {
+            // ensure proper check
+            if (preg_match('/^_/', $name)) {
+                throw new Exception('Invalid method call.');
+            }
+
+            /**
+             * Since the GeoIP PHP extension throws notices for unfound IP
+             *     addresses, setting an empty error_handler prevents any other
+             *     error handling from kicking in. The previously (if any) set
+             *     error handler is then restored.
+             */
+            set_error_handler(function() {});
+            $response = call_user_func_array(array('self', $name), $arguments);
+            restore_error_handler();
+            return $response;
+        }
 
         /**
          * _getDetail function. Accessor method for raw details of geo-lookup.
@@ -76,33 +113,6 @@
                 self::$_record = geoip_record_by_name(self::_getIP());
             }
             return self::$_record;
-        }
-
-        /**
-         * __callStatic function.
-         * 
-         * @access public
-         * @static
-         * @param string $name
-         * @param array $arguments
-         * @return void
-         */
-        public static function __callStatic($name, $arguments)
-        {
-            // ensure proper check
-            if (preg_match('/^_/', $name)) {
-                throw new Exception('Invalid method call.');
-            }
-
-            /**
-             * Since the GeoIP PHP extension throws notices for unfound IP
-             *     addresses, setting an empty error_handler prevents any other
-             *     error handling from kicking in.
-             */
-            set_error_handler(function() {});
-            $response = call_user_func_array(array('self', $name), $arguments);
-            restore_error_handler();
-            return $response;
         }
 
         /**
@@ -318,5 +328,3 @@
             self::$_ip = $ip;
         }
     }
-
-?>
