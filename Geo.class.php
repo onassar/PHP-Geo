@@ -22,7 +22,10 @@
      *           regardless of their defined scope.
      * @example
      * <code>
+     *     // dependency
      *     require_once APP . '/vendors/PHP-Geo/Geo.class.php';
+     * 
+     *     // display city and country
      *     echo Geo::getCity() . ', ' . Geo::getCountry();
      *     exit(0);
      * </code>
@@ -32,28 +35,30 @@
         /**
          * _ip
          * 
-         * @var string
+         * @var    string
          * @access protected
          * @static
          */
         protected static $_ip;
 
         /**
-         * _record. Raw record details
+         * _record
          * 
-         * @var array
+         * Raw record details
+         * 
+         * @var    array
          * @access protected
          * @static
          */
         protected static $_record;
 
         /**
-         * __callStatic function.
+         * __callStatic
          * 
          * @access public
          * @static
-         * @param string $name
-         * @param array $arguments
+         * @param  string $name
+         * @param  array $arguments
          * @return void
          */
         public static function __callStatic($name, $arguments)
@@ -65,9 +70,9 @@
 
             /**
              * Since the GeoIP PHP extension throws notices for unfound IP
-             *     addresses, setting an empty error_handler prevents any other
-             *     error handling from kicking in. The previously (if any) set
-             *     error handler is then restored.
+             * addresses, setting an empty error_handler prevents any other
+             * error handling from kicking in. The previously (if any) set error
+             * handler is then restored.
              */
             set_error_handler(function() {});
             $response = call_user_func_array(array('self', $name), $arguments);
@@ -76,11 +81,13 @@
         }
 
         /**
-         * _getDetail function. Accessor method for raw details of geo-lookup.
+         * _getDetail
+         * 
+         * Accessor method for raw details of geo-lookup.
          * 
          * @access protected
          * @static
-         * @param string $name raw-record detail to retrieve
+         * @param  string $name raw-record detail to retrieve
          * @return mixed
          */
         protected static function _getDetail($name)
@@ -90,8 +97,10 @@
         }
 
         /**
-         * _getIP function. Returns the IP address that the Geo lookup should be
-         *     based on. Defaults to the remote address for the request.
+         * _getIP
+         * 
+         * Returns the IP address that the Geo lookup should be based on.
+         * Defaults to the remote address for the request.
          * 
          * @access protected
          * @static
@@ -99,14 +108,27 @@
          */
         protected static function _getIP()
         {
-            if (is_null(self::$_ip)) {
+            // ip address manually set
+            if (!is_null(self::$_ip)) {
+                return self::$_ip;
+            }
+
+            // load balancer check
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                return $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
+            // native check
+            if (isset($_SERVER['REMOTE_ADDR'])) {
                 return $_SERVER['REMOTE_ADDR'];
             }
-            return self::$_ip;
+            // couldn't be found
+            return '(unknown)';
         }
 
         /**
-         * _getRecord function. Returns raw GeoIP record.
+         * _getRecord
+         * 
+         * Returns raw GeoIP record.
          * 
          * @access protected
          * @static
@@ -121,11 +143,11 @@
         }
 
         /**
-         * getAreaCode function.
+         * getAreaCode
          * 
          * @access protected
          * @static
-         * @return int
+         * @return integer
          */
         protected static function getAreaCode()
         {
@@ -133,7 +155,7 @@
         }
 
         /**
-         * getCity function.
+         * getCity
          * 
          * @access protected
          * @static
@@ -145,7 +167,9 @@
         }
 
         /**
-         * getContinentCode function. Continent shortform code of set IP.
+         * getContinentCode
+         * 
+         * Continent shortform code of set IP.
          * 
          * @access protected
          * @static
@@ -157,8 +181,9 @@
         }
 
         /**
-         * getCoordinates function. Returns latitude/longitude array of
-         *     coordinates.
+         * getCoordinates
+         * 
+         * Returns latitude/longitude array of coordinates.
          * 
          * @access protected
          * @static
@@ -173,7 +198,9 @@
         }
 
         /**
-         * getCountry function. Returns the country of the set IP.
+         * getCountry
+         * 
+         * Returns the country of the set IP.
          * 
          * @access protected
          * @static
@@ -185,12 +212,14 @@
         }
 
         /**
-         * getCountryCode function. Returns the country code for the IP.
+         * getCountryCode
+         * 
+         * Returns the country code for the IP.
          * 
          * @access protected
          * @static
-         * @param int $letters. (default: 3) number of letters the country code
-         *     should be formatted to (eg. USA vs US)
+         * @param  integer $letters. (default: 3) number of letters the country
+         *         code should be formatted to (eg. USA vs US)
          * @return string
          */
         protected static function getCountryCode($letters = 3)
@@ -202,7 +231,9 @@
         }
 
         /**
-         * getLat function. Returns the latitude coordinate for the IP.
+         * getLat
+         * 
+         * Returns the latitude coordinate for the IP.
          * 
          * @access protected
          * @static
@@ -214,7 +245,9 @@
         }
 
         /**
-         * getLong function. Returns the latitude coordinate for the IP.
+         * getLong
+         * 
+         * Returns the latitude coordinate for the IP.
          * 
          * @access protected
          * @static
@@ -226,8 +259,9 @@
         }
 
         /**
-         * getPostalCode function. Returns the postal/zip code, closest to the
-         *     IP.
+         * getPostalCode
+         * 
+         * Returns the postal/zip code, closest to the IP.
          * 
          * @access protected
          * @static
@@ -239,7 +273,9 @@
         }
 
         /**
-         * getProvince function. Alias of self::getRegion.
+         * getProvince
+         * 
+         * Alias of self::getRegion.
          * 
          * @access protected
          * @static
@@ -251,11 +287,12 @@
         }
 
         /**
-         * getRegion function. Returns the region for the set IP, such as Quebec
-         *     or California.
+         * getRegion
          * 
-         * @note will only act as a province/state lookup for certain regions
-         *     (eg. Canada & US)
+         * Returns the region for the set IP, such as Quebec or California.
+         * 
+         * @notes  will only act as a province/state lookup for certain regions
+         *         (eg. Canada & US)
          * @access protected
          * @static
          * @return string
@@ -269,7 +306,9 @@
         }
 
         /**
-         * getState function. Alias of self::getRegion.
+         * getState
+         * 
+         * Alias of self::getRegion.
          * 
          * @access protected
          * @static
@@ -281,7 +320,9 @@
         }
 
         /**
-         * getTimezone function. Returns the timezone for the set IP.
+         * getTimezone
+         * 
+         * Returns the timezone for the set IP.
          * 
          * @access protected
          * @static
@@ -296,7 +337,9 @@
         }
 
         /**
-         * getZip function. Alias of self::getZipCode
+         * getZip
+         * 
+         * Alias of self::getZipCode
          * 
          * @access protected
          * @static
@@ -308,7 +351,9 @@
         }
 
         /**
-         * getZipCode function. Returns the zip code of the set IP.
+         * getZipCode
+         * 
+         * Returns the zip code of the set IP.
          * 
          * @access protected
          * @static
@@ -320,12 +365,13 @@
         }
 
         /**
-         * setIP function. Sets the IP address that the geo-lookups should be
-         *     based off of.
+         * setIP
+         * 
+         * Sets the IP address that the geo-lookups should be based off of.
          * 
          * @access public
          * @static
-         * @param string $ip
+         * @param  string $ip
          * @return void
          */
         public static function setIP($ip)
