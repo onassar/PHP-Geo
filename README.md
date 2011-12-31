@@ -17,7 +17,7 @@ publicly accessible.
 This method captures notices and politely discards them, to prevent any wonky
 flow from entering your application.
 
-### City/Country Lookup
+### City/Country Lookup Example
 
     // dependency
     require_once APP . '/vendors/PHP-Geo/Geo.class.php';
