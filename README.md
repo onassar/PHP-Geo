@@ -3,7 +3,7 @@ PHP-Geo
 The PHP-Geo library contains one static class which acts as a wrapper for the
 [PHP geoip](http://php.net/manual/en/book.geoip.php) extension/module. It&#039;s
 goal was to provide a more straightforward, naturally understood API for
-accessing geo-location data about an remote/IP address.
+accessing geo-location data about a remote/IP address.
 
 Worth noting is that if you go into the source itself, the scope of methods may
 throw you off. This is due to how the geoip plugin works.
