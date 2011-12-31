@@ -6,12 +6,14 @@ goal was to provide a more straightforward, naturally understood API for
 accessing geo-location data about an remote/IP address.
 
 Worth noting is that if you go into the source itself, the scope of methods may
-throw you off. This is due to how the geoip plugin works.  
+throw you off. This is due to how the geoip plugin works.
+
 Specifically, if it can&#039;t find an IP address, it throws a notice. This can
 be tough to deal with in a development environment where errors are set to high,
 and it simply pollutes your log files. To get around this, I used the magic
 **__callStatic** method to act as a wrapper for **all** methods that ought to be
-publicly accessible.  
+publicly accessible.
+
 This method captures notices and politely discards them, to prevent any wonky
 flow from entering your application.
 
