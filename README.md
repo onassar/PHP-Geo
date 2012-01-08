@@ -20,6 +20,7 @@ flow from entering your application.
 ### City/Country Lookup Example
 
 ``` php
+<?php
 
     // dependency
     require_once APP . '/vendors/PHP-Geo/Geo.class.php';
