@@ -19,12 +19,17 @@ flow from entering your application.
 
 ### City/Country Lookup Example
 
+``` php
+<?php
+
     // dependency
     require_once APP . '/vendors/PHP-Geo/Geo.class.php';
     
     // display city and country
     echo Geo::getCity() . ', ' . Geo::getCountry();
     exit(0);
+
+```
 
 While the remote/IP address used for the lookup is determined automagically by
 the wrapper (including determining if the request is being passed through a load
