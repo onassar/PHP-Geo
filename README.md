@@ -11,7 +11,7 @@ throw you off. This is due to how the geoip plugin works.
 Specifically, if it can&#039;t find an IP address, it throws a notice. This can
 be tough to deal with in a development environment where errors are set to high,
 and it simply pollutes your log files. To get around this, I used the magic
-**__callStatic** method to act as a wrapper for **all** methods that ought to be
+`__callStatic` method to act as a wrapper for **all** methods that ought to be
 publicly accessible.
 
 This method captures notices and politely discards them, to prevent any wonky
@@ -33,5 +33,5 @@ flow from entering your application.
 
 While the remote/IP address used for the lookup is determined automagically by
 the wrapper (including determining if the request is being passed through a load
-balancer, in which case the *HTTP_X_FORWARDED_FOR* property is used instead), it
+balancer, in which case the `HTTP_X_FORWARDED_FOR` property is used instead), it
 can be set for manual lookups.
