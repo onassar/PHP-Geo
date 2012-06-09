@@ -17,7 +17,7 @@
      *           do have return values, notices are thrown if the IP being
      *           checked cannot be found. Thus, the magic method __callStatic is
      *           used as a wrapper for all getters. Therefore looking at the
-     *           class signature, getters are set as protected. All classes that
+     *           class signature, getters are set as protected. All methods that
      *           do *not* lead with an underscore are therefore safe to access,
      *           regardless of their defined scope.
      * @example
