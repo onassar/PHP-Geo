@@ -88,11 +88,14 @@
          * @access protected
          * @static
          * @param  string $name raw-record detail to retrieve
-         * @return mixed
+         * @return false|mixed
          */
         protected static function _getDetail($name)
         {
             $record = self::_getRecord();
+            if ($record === false) {
+                return false;
+            }
             return $record[$name];
         }
 
