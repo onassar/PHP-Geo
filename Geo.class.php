@@ -42,15 +42,15 @@
         protected static $_ip;
 
         /**
-         * _record
+         * _cache
          * 
-         * Raw record details
+         * IP lookup caches.
          * 
          * @var    array
          * @access protected
          * @static
          */
-        protected static $_record;
+        protected static $_cache = array();
 
         /**
          * __callStatic
@@ -81,6 +81,21 @@
         }
 
         /**
+         * _cache
+         * 
+         * @access protected
+         * @static
+         * @param  string $key
+         * @param  mixed $value
+         * @return void
+         */
+        protected static function _cache($key, $value)
+        {
+            $key = self::_getIP() . ' / ' . ($key);
+            self::$_cache[$key] = $value;
+        }
+
+        /**
          * _getDetail
          * 
          * Accessor method for raw details of geo-lookup.
@@ -96,6 +111,9 @@
             if ($record === false) {
                 return false;
             }
+            if ($record[$name] === '') {
+                return false;
+            }
             return $record[$name];
         }
 
@@ -107,25 +125,20 @@
          * 
          * @access protected
          * @static
-         * @return string
+         * @return string|false
          */
         protected static function _getIP()
         {
-            // ip address manually set
             if (!is_null(self::$_ip)) {
                 return self::$_ip;
             }
-
-            // load balancer check
             if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
                 return $_SERVER['HTTP_X_FORWARDED_FOR'];
             }
-            // native check
             if (isset($_SERVER['REMOTE_ADDR'])) {
                 return $_SERVER['REMOTE_ADDR'];
             }
-            // couldn't be found
-            return '(unknown)';
+            return false;
         }
 
         /**
@@ -139,10 +152,32 @@
          */
         protected static function _getRecord()
         {
-            if (is_null(self::$_record)) {
-                self::$_record = geoip_record_by_name(self::_getIP());
+            $record = self::_lookup('record');
+            if ($record === null) {
+                $record = geoip_record_by_name(self::_getIP());
+                if (empty($record)) {
+                    $record = false;
+                }
+                self::_cache('record', $record);
             }
-            return self::$_record;
+            return $record;
+        }
+
+        /**
+         * _lookup
+         * 
+         * @access protected
+         * @static
+         * @param  string $key
+         * @return mixed|null
+         */
+        protected static function _lookup($key)
+        {
+            $key = self::_getIP() . ' / ' . ($key);
+            if (isset(self::$_cache[$key])) {
+                return self::$_cache[$key];
+            }
+            return null;
         }
 
         /**
@@ -176,11 +211,20 @@
          * 
          * @access protected
          * @static
-         * @return string
+         * @return string|false
          */
         protected static function getContinentCode()
         {
-            return geoip_continent_code_by_name(self::_getIP());
+            $key = 'continentCode';
+            $continentCode = self::_lookup($key);
+            if ($continentCode === null) {
+                $continentCode = geoip_continent_code_by_name(self::_getIP());
+                if ($continentCode === '') {
+                    $continentCode = false;
+                }
+                self::_cache($key, $continentCode);
+            }
+            return $continentCode;
         }
 
         /**
@@ -194,10 +238,7 @@
          */
         protected static function getCoordinates()
         {
-            return array(
-                self::getLat(),
-                self::getLong()
-            );
+            return array(self::getLat(), self::getLong());
         }
 
         /**
@@ -207,11 +248,19 @@
          * 
          * @access protected
          * @static
-         * @return string
+         * @return string|false
          */
         protected static function getCountry()
         {
-            return geoip_country_name_by_name(self::_getIP());
+            $country = self::_lookup('country');
+            if ($country === null) {
+                $country = geoip_country_name_by_name(self::_getIP());
+                if ($country === '') {
+                    $country = false;
+                }
+                self::_cache('country', $country);
+            }
+            return $country;
         }
 
         /**
@@ -221,16 +270,60 @@
          * 
          * @access protected
          * @static
-         * @param  integer $letters. (default: 3) number of letters the country
+         * @param  int $letters. (default: 3) number of letters the country
          *         code should be formatted to (eg. USA vs US)
-         * @return string
+         * @return string|false
          */
         protected static function getCountryCode($letters = 3)
         {
-            if ($letters === 3) {
-                return geoip_country_code3_by_name(self::_getIP());
+            $key = 'countryCode.' . ($letters);
+            $countryCode = self::_lookup($key);
+            if ($countryCode === null) {
+                if ($letters === 3) {
+                    $countryCode = geoip_country_code3_by_name(self::_getIP());
+                } else {
+                    $countryCode = geoip_country_code_by_name(self::_getIP());
+                }
+                if ($countryCode === '') {
+                    $countryCode = false;
+                }
+                self::_cache($key, $countryCode);
             }
-            return geoip_country_code_by_name(self::_getIP());
+            return $countryCode;
+        }
+
+        /**
+         * getFormatted
+         * 
+         * Returns a formatted string for UI presentation. Examples include:
+         * - Toronto, Ontatio
+         * - London, England
+         * - Egypt
+         * - Miami, Florida
+         * 
+         * @access protected
+         * @static
+         * @return string
+         */
+        protected static function getFormatted()
+        {
+            $formatted = self::getCity() . ', ' . self::getCountry();
+            if (self::getCity() === false || self::getCity() === '') {
+                $formatted = self::getCountry();
+            } else {
+                if (
+                    self::getCountryCode(2) === 'US'
+                    || self::getCountryCode(2) === 'CA'
+                ) {
+                    if (
+                        self::getRegion() !== false
+                        && self::getRegion() !== ''
+                    ) {
+                        $formatted = self::getCity() . ', ' . self::getRegion();
+                    }
+                }
+            }
+            return $formatted;
         }
 
         /**
@@ -282,7 +375,7 @@
          * 
          * @access protected
          * @static
-         * @return string returns the province/region for the set IP
+         * @return string|false
          */
         protected static function getProvince()
         {
@@ -294,18 +387,38 @@
          * 
          * Returns the region for the set IP, such as Quebec or California.
          * 
-         * @notes  will only act as a province/state lookup for certain regions
+         * @note   will only act as a province/state lookup for certain regions
          *         (eg. Canada & US)
          * @access protected
          * @static
-         * @return string
+         * @return string|false
          */
         protected static function getRegion()
         {
-            return geoip_region_name_by_code(
-                self::getCountryCode(2),
-                self::_getDetail('region')
-            );
+            $region = self::_lookup('region');
+            if ($region === null) {
+                $region = geoip_region_name_by_code(
+                    self::getCountryCode(2),
+                    self::getRegionCode()
+                );
+                if ($region === '') {
+                    $region = false;
+                }
+                self::_cache('region', $region);
+            }
+            return $region;
+        }
+
+        /**
+         * getRegionCode
+         * 
+         * @access protected
+         * @static
+         * @return string|false
+         */
+        protected static function getRegionCode()
+        {
+            return self::_getDetail('region');
         }
 
         /**
@@ -329,14 +442,22 @@
          * 
          * @access protected
          * @static
-         * @return string
+         * @return string|false
          */
         protected static function getTimezone()
         {
-            return geoip_time_zone_by_country_and_region(
-                self::getCountryCode(2),
-                self::_getDetail('region')
-            );
+            $timezone = self::_lookup('timezone');
+            if ($timezone === null) {
+                $timezone = geoip_time_zone_by_country_and_region(
+                    self::getCountryCode(2),
+                    self::getRegionCode()
+                );
+                if ($timezone === '') {
+                    $timezone = false;
+                }
+                self::_cache('timezone', $timezone);
+            }
+            return $timezone;
         }
 
         /**
@@ -346,7 +467,7 @@
          * 
          * @access protected
          * @static
-         * @return string zip code of the originating request
+         * @return string|false
          */
         protected static function getZip()
         {
@@ -360,7 +481,7 @@
          * 
          * @access protected
          * @static
-         * @return string
+         * @return string|false
          */
         protected static function getZipCode()
         {
