@@ -201,7 +201,7 @@
          */
         protected static function getCity()
         {
-            return self::_getDetail('city');
+            return utf8_encode(self::_getDetail('city'));
         }
 
         /**
@@ -224,7 +224,7 @@
                 }
                 self::_cache($key, $continentCode);
             }
-            return $continentCode;
+            return utf8_encode($continentCode);
         }
 
         /**
@@ -260,7 +260,7 @@
                 }
                 self::_cache('country', $country);
             }
-            return $country;
+            return utf8_encode($country);
         }
 
         /**
@@ -289,7 +289,7 @@
                 }
                 self::_cache($key, $countryCode);
             }
-            return $countryCode;
+            return utf8_encode($countryCode);
         }
 
         /**
@@ -337,7 +337,7 @@
          */
         protected static function getLat()
         {
-            return self::_getDetail('latitude');
+            return utf8_encode(self::_getDetail('latitude'));
         }
 
         /**
@@ -351,7 +351,7 @@
          */
         protected static function getLong()
         {
-            return self::_getDetail('longitude');
+            return utf8_encode(self::_getDetail('longitude'));
         }
 
         /**
@@ -365,7 +365,7 @@
          */
         protected static function getPostalCode()
         {
-            return self::_getDetail('postal_code');
+            return utf8_encode(self::_getDetail('postal_code'));
         }
 
         /**
@@ -379,7 +379,7 @@
          */
         protected static function getProvince()
         {
-            return self::getRegion();
+            return utf8_encode(self::getRegion());
         }
 
         /**
@@ -406,7 +406,7 @@
                 }
                 self::_cache('region', $region);
             }
-            return $region;
+            return utf8_encode($region);
         }
 
         /**
@@ -418,7 +418,7 @@
          */
         protected static function getRegionCode()
         {
-            return self::_getDetail('region');
+            return utf8_encode(self::_getDetail('region'));
         }
 
         /**
@@ -432,7 +432,7 @@
          */
         protected static function getState()
         {
-            return self::getRegion();
+            return utf8_encode(self::getRegion());
         }
 
         /**
@@ -457,7 +457,7 @@
                 }
                 self::_cache('timezone', $timezone);
             }
-            return $timezone;
+            return utf8_encode($timezone);
         }
 
         /**
@@ -471,7 +471,7 @@
          */
         protected static function getZip()
         {
-            return self::getZipCode();
+            return utf8_encode(self::getZipCode());
         }
 
         /**
@@ -485,7 +485,7 @@
          */
         protected static function getZipCode()
         {
-            return self::getPostalCode();
+            return utf8_encode(self::getPostalCode());
         }
 
         /**
