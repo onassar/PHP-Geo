@@ -270,7 +270,7 @@
          * 
          * @access protected
          * @static
-         * @param  int $letters. (default: 3) number of letters the country
+         * @param  integer $letters. (default: 3) number of letters the country
          *         code should be formatted to (eg. USA vs US)
          * @return string|false
          */
