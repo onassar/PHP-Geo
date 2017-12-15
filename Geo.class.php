@@ -1,7 +1,7 @@
 <?php
 
     // dependecy checks
-    if (!in_array('geoip', get_loaded_extensions())) {
+    if (in_array('geoip', get_loaded_extensions()) === false) {
         throw new Exception('GeoIP extension needs to be installed.');
     }
 
@@ -10,16 +10,15 @@
      * 
      * Wrapper for GeoIP lookup service (using binary file).
      * 
-     * @author   Oliver Nassar <onassar@gmail.com
      * @abstract
-     * @notes    The GeoIP PHP extension handles errors in a bizarre way (see:
-     *           http://pecl.php.net/bugs/bug.php?id=22691). While the functions
-     *           do have return values, notices are thrown if the IP being
-     *           checked cannot be found. Thus, the magic method __callStatic is
-     *           used as a wrapper for all getters. Therefore looking at the
-     *           class signature, getters are set as protected. All methods that
-     *           do *not* lead with an underscore are therefore safe to access,
-     *           regardless of their defined scope.
+     * @note    The GeoIP PHP extension handles errors in a bizarre way (see:
+     *          http://pecl.php.net/bugs/bug.php?id=22691). While the functions
+     *          do have return values, notices are thrown if the IP being
+     *          checked cannot be found. Thus, the magic method __callStatic is
+     *          used as a wrapper for all getters. Therefore looking at the
+     *          class signature, getters are set as protected. All methods that
+     *          do *not* lead with an underscore are therefore safe to access,
+     *          regardless of their defined scope.
      * @example
      * <code>
      *     // dependency
@@ -29,14 +28,16 @@
      *     echo Geo::getCity() . ', ' . Geo::getCountry();
      *     exit(0);
      * </code>
+     * @link    https://github.com/onassar/PHP-Geo
+     * @author  Oliver Nassar <onassar@gmail.com>
      */
     abstract class Geo
     {
         /**
          * _ip
          * 
-         * @var    string
-         * @access protected
+         * @var     string
+         * @access  protected
          * @static
          */
         protected static $_ip;
@@ -46,8 +47,8 @@
          * 
          * IP lookup caches.
          * 
-         * @var    array
-         * @access protected
+         * @var     array
+         * @access  protected
          * @static
          */
         protected static $_cache = array();
@@ -55,13 +56,13 @@
         /**
          * __callStatic
          * 
-         * @access public
+         * @access  public
          * @static
-         * @param  string $name
-         * @param  array $arguments
-         * @return void
+         * @param   string $name
+         * @param   array $arguments
+         * @return  void
          */
-        public static function __callStatic($name, $arguments)
+        public static function __callStatic($name, array $arguments)
         {
             // ensure proper check
             if (preg_match('/^_/', $name)) {
@@ -83,11 +84,11 @@
         /**
          * _cache
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @param  string $key
-         * @param  mixed $value
-         * @return void
+         * @param   string $key
+         * @param   mixed $value
+         * @return  void
          */
         protected static function _cache($key, $value)
         {
@@ -100,10 +101,10 @@
          * 
          * Accessor method for raw details of geo-lookup.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @param  string $name raw-record detail to retrieve
-         * @return false|mixed
+         * @param   string $name raw-record detail to retrieve
+         * @return  false|mixed
          */
         protected static function _getDetail($name)
         {
@@ -123,19 +124,19 @@
          * Returns the IP address that the Geo lookup should be based on.
          * Defaults to the remote address for the request.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function _getIP()
         {
-            if (!is_null(self::$_ip)) {
+            if (is_null(self::$_ip) === false) {
                 return self::$_ip;
             }
-            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) === true) {
                 return $_SERVER['HTTP_X_FORWARDED_FOR'];
             }
-            if (isset($_SERVER['REMOTE_ADDR'])) {
+            if (isset($_SERVER['REMOTE_ADDR']) === true) {
                 return $_SERVER['REMOTE_ADDR'];
             }
             return false;
@@ -146,16 +147,16 @@
          * 
          * Returns raw GeoIP record.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return array raw 'geo' details for the request
+         * @return  array raw 'geo' details for the request
          */
         protected static function _getRecord()
         {
             $record = self::_lookup('record');
             if ($record === null) {
                 $record = geoip_record_by_name(self::_getIP());
-                if (empty($record)) {
+                if (empty($record) === true) {
                     $record = false;
                 }
                 self::_cache('record', $record);
@@ -166,10 +167,10 @@
         /**
          * _lookup
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @param  string $key
-         * @return mixed|null
+         * @param   string $key
+         * @return  mixed|null
          */
         protected static function _lookup($key)
         {
@@ -183,9 +184,9 @@
         /**
          * getAreaCode
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return integer
+         * @return  integer
          */
         protected static function getAreaCode()
         {
@@ -195,9 +196,9 @@
         /**
          * getCity
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string
+         * @return  string
          */
         protected static function getCity()
         {
@@ -209,9 +210,9 @@
          * 
          * Continent shortform code of set IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getContinentCode()
         {
@@ -232,9 +233,9 @@
          * 
          * Returns latitude/longitude array of coordinates.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return array
+         * @return  array
          */
         protected static function getCoordinates()
         {
@@ -246,9 +247,9 @@
          * 
          * Returns the country of the set IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getCountry()
         {
@@ -268,11 +269,11 @@
          * 
          * Returns the country code for the IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @param  integer $letters. (default: 3) number of letters the country
-         *         code should be formatted to (eg. USA vs US)
-         * @return string|false
+         * @param   integer $letters. (default: 3) number of letters the country
+         *          code should be formatted to (eg. USA vs US)
+         * @return  string|false
          */
         protected static function getCountryCode($letters = 3)
         {
@@ -301,9 +302,9 @@
          * - Egypt
          * - Miami, Florida
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string
+         * @return  string
          */
         protected static function getFormatted()
         {
@@ -331,9 +332,9 @@
          * 
          * Returns the latitude coordinate for the IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return float
+         * @return  float
          */
         protected static function getLat()
         {
@@ -345,9 +346,9 @@
          * 
          * Returns the latitude coordinate for the IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return float
+         * @return  float
          */
         protected static function getLong()
         {
@@ -359,9 +360,9 @@
          * 
          * Returns the postal/zip code, closest to the IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string
+         * @return  string
          */
         protected static function getPostalCode()
         {
@@ -373,9 +374,9 @@
          * 
          * Alias of self::getRegion.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getProvince()
         {
@@ -387,11 +388,11 @@
          * 
          * Returns the region for the set IP, such as Quebec or California.
          * 
-         * @note   will only act as a province/state lookup for certain regions
-         *         (eg. Canada & US)
-         * @access protected
+         * @note    will only act as a province/state lookup for certain regions
+         *          (eg. Canada & US)
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getRegion()
         {
@@ -412,9 +413,9 @@
         /**
          * getRegionCode
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getRegionCode()
         {
@@ -426,9 +427,9 @@
          * 
          * Alias of self::getRegion.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string
+         * @return  string
          */
         protected static function getState()
         {
@@ -440,9 +441,9 @@
          * 
          * Returns the timezone for the set IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getTimezone()
         {
@@ -465,9 +466,9 @@
          * 
          * Alias of self::getZipCode
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getZip()
         {
@@ -479,9 +480,9 @@
          * 
          * Returns the zip code of the set IP.
          * 
-         * @access protected
+         * @access  protected
          * @static
-         * @return string|false
+         * @return  string|false
          */
         protected static function getZipCode()
         {
@@ -493,10 +494,10 @@
          * 
          * Sets the IP address that the geo-lookups should be based off of.
          * 
-         * @access public
+         * @access  public
          * @static
-         * @param  string $ip
-         * @return void
+         * @param   string $ip
+         * @return  void
          */
         public static function setIP($ip)
         {
