@@ -308,23 +308,56 @@
          */
         protected static function getFormatted()
         {
-            $formatted = self::getCity() . ', ' . self::getCountry();
-            if (self::getCity() === false || self::getCity() === '') {
-                $formatted = self::getCountry();
-            } else {
-                if (
-                    self::getCountryCode(2) === 'US'
-                    || self::getCountryCode(2) === 'CA'
-                ) {
-                    if (
-                        self::getRegion() !== false
-                        && self::getRegion() !== ''
-                    ) {
-                        $formatted = self::getCity() . ', ' . self::getRegion();
+            $pieces = array();
+            $city = self::getCity();
+            $region = self::getRegion();
+            $country = self::getCountry();
+            $countryCode = self::getCountryCode(2);
+            $countryCode = strtoupper($countryCode);
+            if ($countryCode === 'CA' || $countryCode === 'US') {
+                if ($city !== false && $city !== '') {
+                    array_push($pieces, $city);
+                    if ($region !== false && $region !== '') {
+                        array_push($pieces, $region);
+                        return implode(', ', $pieces);
                     }
+                    if ($country !== false && $country !== '') {
+                        array_push($pieces, $country);
+                        return implode(', ', $pieces);
+                    }
+                    array_push($pieces, $countryCode);
+                    return implode(', ', $pieces);
                 }
+                if ($region !== false && $region !== '') {
+                    array_push($pieces, $region);
+                    if ($country !== false && $country !== '') {
+                        array_push($pieces, $country);
+                        return implode(', ', $pieces);
+                    }
+                    array_push($pieces, $countryCode);
+                    return implode(', ', $pieces);
+                }
+                if ($country !== false && $country !== '') {
+                    return $country;
+                }
+                return $countryCode;
             }
-            return $formatted;
+            if ($city !== false && $city !== '') {
+                array_push($pieces, $city);
+                if ($country !== false && $country !== '') {
+                    array_push($pieces, $country);
+                    return implode(', ', $pieces);
+                }
+                if ($countryCode !== false && $countryCode !== '') {
+                    array_push($pieces, $countryCode);
+                    return implode(', ', $pieces);
+                }
+                return $city;
+            }
+            if ($country !== false && $country !== '') {
+                return $country;
+            }
+            return '';
         }
 
         /**
