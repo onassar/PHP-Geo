@@ -212,7 +212,7 @@
          * 
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getContinentCode()
         {
@@ -224,6 +224,9 @@
                     $continentCode = false;
                 }
                 self::_cache($key, $continentCode);
+            }
+            if ($continentCode === false) {
+                return false;
             }
             return utf8_encode($continentCode);
         }
@@ -249,7 +252,7 @@
          * 
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getCountry()
         {
@@ -260,6 +263,9 @@
                     $country = false;
                 }
                 self::_cache('country', $country);
+            }
+            if ($country === false) {
+                return false;
             }
             return utf8_encode($country);
         }
@@ -273,7 +279,7 @@
          * @static
          * @param   integer $letters. (default: 3) number of letters the country
          *          code should be formatted to (eg. USA vs US)
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getCountryCode($letters = 3)
         {
@@ -287,8 +293,11 @@
                 }
                 if ($countryCode === '') {
                     $countryCode = false;
-                }
+                };
                 self::_cache($key, $countryCode);
+            }
+            if ($countryCode === false) {
+                return false;
             }
             return utf8_encode($countryCode);
         }
@@ -425,7 +434,7 @@
          *          (eg. Canada & US)
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getRegion()
         {
@@ -439,6 +448,9 @@
                     $region = false;
                 }
                 self::_cache('region', $region);
+            }
+            if ($region === false) {
+                return false;
             }
             return utf8_encode($region);
         }
@@ -476,7 +488,7 @@
          * 
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getTimezone()
         {
@@ -490,6 +502,9 @@
                     $timezone = false;
                 }
                 self::_cache('timezone', $timezone);
+            }
+            if ($timezone === false) {
+                return false;
             }
             return utf8_encode($timezone);
         }
