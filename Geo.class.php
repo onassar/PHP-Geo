@@ -76,7 +76,8 @@
              * handler is then restored.
              */
             set_error_handler(function() {});
-            $response = call_user_func_array(array('self', $name), $arguments);
+            $callback = array('self', $name);
+            $response = call_user_func_array($callback, $arguments);
             restore_error_handler();
             return $response;
         }
@@ -175,7 +176,7 @@
         protected static function _lookup($key)
         {
             $key = self::_getIP() . ' / ' . ($key);
-            if (isset(self::$_cache[$key])) {
+            if (isset(self::$_cache[$key]) === true) {
                 return self::$_cache[$key];
             }
             return null;
@@ -186,11 +187,15 @@
          * 
          * @access  protected
          * @static
-         * @return  integer
+         * @return  false|integer
          */
         protected static function getAreaCode()
         {
-            return self::_getDetail('area_code');
+            $areaCode = self::_getDetail('area_code');
+            if ($areaCode === false) {
+                return false;
+            }
+            return $areaCode;
         }
 
         /**
@@ -198,11 +203,16 @@
          * 
          * @access  protected
          * @static
-         * @return  string
+         * @return  false|string
          */
         protected static function getCity()
         {
-            return utf8_encode(self::_getDetail('city'));
+            $city = self::_getDetail('city');
+            if ($city === false) {
+                return false;
+            }
+            $encoded = utf8_encode($city);
+            return $encoded;
         }
 
         /**
@@ -228,7 +238,8 @@
             if ($continentCode === false) {
                 return false;
             }
-            return utf8_encode($continentCode);
+            $encoded = utf8_encode($continentCode);
+            return $encoded;
         }
 
         /**
@@ -242,7 +253,15 @@
          */
         protected static function getCoordinates()
         {
-            return array(self::getLat(), self::getLong());
+            $latitude = self::getLat();
+            if ($latitude === false) {
+                return array(false, false);
+            }
+            $longitude = self::getLong();
+            if ($latitude === false) {
+                return array(false, false);
+            }
+            return array($latitude, $longitude);
         }
 
         /**
@@ -267,7 +286,8 @@
             if ($country === false) {
                 return false;
             }
-            return utf8_encode($country);
+            $encoded = utf8_encode($country);
+            return $encoded;
         }
 
         /**
@@ -299,7 +319,8 @@
             if ($countryCode === false) {
                 return false;
             }
-            return utf8_encode($countryCode);
+            $encoded = utf8_encode($countryCode);
+            return $encoded;
         }
 
         /**
@@ -376,11 +397,16 @@
          * 
          * @access  protected
          * @static
-         * @return  float
+         * @return  false|float
          */
         protected static function getLat()
         {
-            return utf8_encode(self::_getDetail('latitude'));
+            $latitude = self::_getDetail('latitude');
+            if ($latitude === false) {
+                return false;
+            }
+            $encoded = utf8_encode($latitude);
+            return $encoded;
         }
 
         /**
@@ -390,11 +416,16 @@
          * 
          * @access  protected
          * @static
-         * @return  float
+         * @return  false|float
          */
         protected static function getLong()
         {
-            return utf8_encode(self::_getDetail('longitude'));
+            $longitude = self::_getDetail('longitude');
+            if ($longitude === false) {
+                return false;
+            }
+            $encoded = utf8_encode($longitude);
+            return $encoded;
         }
 
         /**
@@ -404,11 +435,16 @@
          * 
          * @access  protected
          * @static
-         * @return  string
+         * @return  false|string
          */
         protected static function getPostalCode()
         {
-            return utf8_encode(self::_getDetail('postal_code'));
+            $postalCode = self::_getDetail('postal_code');
+            if ($postalCode === false) {
+                return false;
+            }
+            $encoded = utf8_encode($postalCode);
+            return $encoded;
         }
 
         /**
@@ -418,11 +454,12 @@
          * 
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getProvince()
         {
-            return utf8_encode(self::getRegion());
+            $region = self::getRegion();
+            return $region;
         }
 
         /**
@@ -452,7 +489,8 @@
             if ($region === false) {
                 return false;
             }
-            return utf8_encode($region);
+            $encoded = utf8_encode($region);
+            return $encoded;
         }
 
         /**
@@ -460,11 +498,16 @@
          * 
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getRegionCode()
         {
-            return utf8_encode(self::_getDetail('region'));
+            $region = self::_getDetail('region');
+            if ($region === false) {
+                return false;
+            }
+            $encoded = utf8_encode($region);
+            return $encoded;
         }
 
         /**
@@ -474,11 +517,12 @@
          * 
          * @access  protected
          * @static
-         * @return  string
+         * @return  false|string
          */
         protected static function getState()
         {
-            return utf8_encode(self::getRegion());
+            $region = self::getRegion();
+            return $region;
         }
 
         /**
@@ -506,7 +550,8 @@
             if ($timezone === false) {
                 return false;
             }
-            return utf8_encode($timezone);
+            $encoded = utf8_encode($timezone);
+            return $encoded;
         }
 
         /**
@@ -516,25 +561,27 @@
          * 
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getZip()
         {
-            return utf8_encode(self::getZipCode());
+            $zipCode = self::getZipCode();
+            return $zipCode;
         }
 
         /**
          * getZipCode
          * 
-         * Returns the zip code of the set IP.
+         * Alias of self::getPostalCode.
          * 
          * @access  protected
          * @static
-         * @return  string|false
+         * @return  false|string
          */
         protected static function getZipCode()
         {
-            return utf8_encode(self::getPostalCode());
+            $postalCode = self::getPostalCode();
+            return $postalCode;
         }
 
         /**
