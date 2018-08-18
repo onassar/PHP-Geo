@@ -36,18 +36,18 @@
         /**
          * _ip
          * 
-         * @var     string
+         * @var     null|string
          * @access  protected
          * @static
          */
-        protected static $_ip;
+        protected static $_ip = null;
 
         /**
          * _cache
          * 
          * IP lookup caches.
          * 
-         * @var     array
+         * @var     array (default: array())
          * @access  protected
          * @static
          */
@@ -62,7 +62,7 @@
          * @param   array $arguments
          * @return  void
          */
-        public static function __callStatic($name, array $arguments)
+        public static function __callStatic(string $name, array $arguments)
         {
             // ensure proper check
             if (preg_match('/^_/', $name)) {
@@ -91,10 +91,30 @@
          * @param   mixed $value
          * @return  void
          */
-        protected static function _cache($key, $value)
+        protected static function _cache(string $key, $value): void
         {
             $key = self::_getIP() . ' / ' . ($key);
             self::$_cache[$key] = $value;
+        }
+
+        /**
+         * _format
+         * 
+         * @access  protected
+         * @static
+         * @param   mixed $value
+         * @return  false|string
+         */
+        protected static function _format($value)
+        {
+            if ($value === false) {
+                return false;
+            }
+            if ($value === null) {
+                return false;
+            }
+            $encoded = utf8_encode($value);
+            return $encoded;
         }
 
         /**
@@ -150,13 +170,14 @@
          * 
          * @access  protected
          * @static
-         * @return  array raw 'geo' details for the request
+         * @return  false|array raw 'geo' details for the request
          */
         protected static function _getRecord()
         {
             $record = self::_lookup('record');
             if ($record === null) {
-                $record = geoip_record_by_name(self::_getIP());
+                $ip = self::_getIP();
+                $record = geoip_record_by_name($ip);
                 if (empty($record) === true) {
                     $record = false;
                 }
@@ -173,7 +194,7 @@
          * @param   string $key
          * @return  mixed|null
          */
-        protected static function _lookup($key)
+        protected static function _lookup(string $key)
         {
             $key = self::_getIP() . ' / ' . ($key);
             if (isset(self::$_cache[$key]) === true) {
@@ -192,9 +213,7 @@
         protected static function getAreaCode()
         {
             $areaCode = self::_getDetail('area_code');
-            if ($areaCode === false) {
-                return false;
-            }
+            $formatted = self::_format($areaCode);
             return $areaCode;
         }
 
@@ -208,11 +227,8 @@
         protected static function getCity()
         {
             $city = self::_getDetail('city');
-            if ($city === false) {
-                return false;
-            }
-            $encoded = utf8_encode($city);
-            return $encoded;
+            $formatted = self::_format($city);
+            return $city;
         }
 
         /**
@@ -229,17 +245,15 @@
             $key = 'continentCode';
             $continentCode = self::_lookup($key);
             if ($continentCode === null) {
-                $continentCode = geoip_continent_code_by_name(self::_getIP());
+                $ip = self::_getIP();
+                $continentCode = geoip_continent_code_by_name($ip);
                 if ($continentCode === '') {
                     $continentCode = false;
                 }
                 self::_cache($key, $continentCode);
             }
-            if ($continentCode === false) {
-                return false;
-            }
-            $encoded = utf8_encode($continentCode);
-            return $encoded;
+            $formatted = self::_format($continentCode);
+            return $continentCode;
         }
 
         /**
@@ -277,17 +291,15 @@
         {
             $country = self::_lookup('country');
             if ($country === null) {
-                $country = geoip_country_name_by_name(self::_getIP());
+                $ip = self::_getIP();
+                $country = geoip_country_name_by_name($ip);
                 if ($country === '') {
                     $country = false;
                 }
                 self::_cache('country', $country);
             }
-            if ($country === false) {
-                return false;
-            }
-            $encoded = utf8_encode($country);
-            return $encoded;
+            $formatted = self::_format($country);
+            return $country;
         }
 
         /**
@@ -297,30 +309,28 @@
          * 
          * @access  protected
          * @static
-         * @param   integer $letters. (default: 3) number of letters the country
+         * @param   int $letters. (default: 3) number of letters the country
          *          code should be formatted to (eg. USA vs US)
          * @return  false|string
          */
-        protected static function getCountryCode($letters = 3)
+        protected static function getCountryCode(int $letters = 3)
         {
             $key = 'countryCode.' . ($letters);
             $countryCode = self::_lookup($key);
             if ($countryCode === null) {
+                $ip = self::_getIP();
                 if ($letters === 3) {
-                    $countryCode = geoip_country_code3_by_name(self::_getIP());
+                    $countryCode = geoip_country_code3_by_name($ip);
                 } else {
-                    $countryCode = geoip_country_code_by_name(self::_getIP());
+                    $countryCode = geoip_country_code_by_name($ip);
                 }
                 if ($countryCode === '') {
                     $countryCode = false;
                 };
                 self::_cache($key, $countryCode);
             }
-            if ($countryCode === false) {
-                return false;
-            }
-            $encoded = utf8_encode($countryCode);
-            return $encoded;
+            $formatted = self::_format($countryCode);
+            return $countryCode;
         }
 
         /**
@@ -402,11 +412,8 @@
         protected static function getLat()
         {
             $latitude = self::_getDetail('latitude');
-            if ($latitude === false) {
-                return false;
-            }
-            $encoded = utf8_encode($latitude);
-            return $encoded;
+            $formatted = self::_format($latitude);
+            return $latitude;
         }
 
         /**
@@ -421,11 +428,8 @@
         protected static function getLong()
         {
             $longitude = self::_getDetail('longitude');
-            if ($longitude === false) {
-                return false;
-            }
-            $encoded = utf8_encode($longitude);
-            return $encoded;
+            $formatted = self::_format($longitude);
+            return $longitude;
         }
 
         /**
@@ -440,11 +444,8 @@
         protected static function getPostalCode()
         {
             $postalCode = self::_getDetail('postal_code');
-            if ($postalCode === false) {
-                return false;
-            }
-            $encoded = utf8_encode($postalCode);
-            return $encoded;
+            $formatted = self::_format($postalCode);
+            return $postalCode;
         }
 
         /**
@@ -486,11 +487,8 @@
                 }
                 self::_cache('region', $region);
             }
-            if ($region === false) {
-                return false;
-            }
-            $encoded = utf8_encode($region);
-            return $encoded;
+            $formatted = self::_format($region);
+            return $region;
         }
 
         /**
@@ -503,11 +501,8 @@
         protected static function getRegionCode()
         {
             $region = self::_getDetail('region');
-            if ($region === false) {
-                return false;
-            }
-            $encoded = utf8_encode($region);
-            return $encoded;
+            $formatted = self::_format($region);
+            return $region;
         }
 
         /**
@@ -547,11 +542,8 @@
                 }
                 self::_cache('timezone', $timezone);
             }
-            if ($timezone === false) {
-                return false;
-            }
-            $encoded = utf8_encode($timezone);
-            return $encoded;
+            $formatted = self::_format($timezone);
+            return $timezone;
         }
 
         /**
@@ -594,7 +586,7 @@
          * @param   string $ip
          * @return  void
          */
-        public static function setIP($ip)
+        public static function setIP(string $ip)
         {
             self::$_ip = $ip;
         }
