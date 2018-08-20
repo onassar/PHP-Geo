@@ -214,7 +214,7 @@
         {
             $areaCode = self::_getDetail('area_code');
             $formatted = self::_format($areaCode);
-            return $areaCode;
+            return $formatted;
         }
 
         /**
@@ -228,7 +228,7 @@
         {
             $city = self::_getDetail('city');
             $formatted = self::_format($city);
-            return $city;
+            return $formatted;
         }
 
         /**
@@ -253,7 +253,7 @@
                 self::_cache($key, $continentCode);
             }
             $formatted = self::_format($continentCode);
-            return $continentCode;
+            return $formatted;
         }
 
         /**
@@ -299,7 +299,7 @@
                 self::_cache('country', $country);
             }
             $formatted = self::_format($country);
-            return $country;
+            return $formatted;
         }
 
         /**
@@ -330,7 +330,7 @@
                 self::_cache($key, $countryCode);
             }
             $formatted = self::_format($countryCode);
-            return $countryCode;
+            return $formatted;
         }
 
         /**
@@ -413,7 +413,7 @@
         {
             $latitude = self::_getDetail('latitude');
             $formatted = self::_format($latitude);
-            return $latitude;
+            return $formatted;
         }
 
         /**
@@ -429,7 +429,7 @@
         {
             $longitude = self::_getDetail('longitude');
             $formatted = self::_format($longitude);
-            return $longitude;
+            return $formatted;
         }
 
         /**
@@ -445,7 +445,7 @@
         {
             $postalCode = self::_getDetail('postal_code');
             $formatted = self::_format($postalCode);
-            return $postalCode;
+            return $formatted;
         }
 
         /**
@@ -488,7 +488,7 @@
                 self::_cache('region', $region);
             }
             $formatted = self::_format($region);
-            return $region;
+            return $formatted;
         }
 
         /**
@@ -502,7 +502,7 @@
         {
             $region = self::_getDetail('region');
             $formatted = self::_format($region);
-            return $region;
+            return $formatted;
         }
 
         /**
@@ -543,7 +543,7 @@
                 self::_cache('timezone', $timezone);
             }
             $formatted = self::_format($timezone);
-            return $timezone;
+            return $formatted;
         }
 
         /**
