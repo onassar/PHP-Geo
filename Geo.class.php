@@ -2,11 +2,12 @@
 
     // dependecy checks
     if (in_array('geoip', get_loaded_extensions()) === false) {
-        throw new Exception('GeoIP extension needs to be installed.');
+        $msg = 'GeoIP extension needs to be installed';
+        throw new Exception($msg);
     }
 
     /**
-     * Geo
+     * GeoIP
      * 
      * Wrapper for GeoIP lookup service (using binary file).
      * 
@@ -25,13 +26,13 @@
      *     require_once APP . '/vendors/PHP-Geo/Geo.class.php';
      * 
      *     // display city and country
-     *     echo Geo::getCity() . ', ' . Geo::getCountry();
+     *     echo GeoIP::getCity() . ', ' . GeoIP::getCountry();
      *     exit(0);
      * </code>
      * @link    https://github.com/onassar/PHP-Geo
      * @author  Oliver Nassar <onassar@gmail.com>
      */
-    abstract class Geo
+    abstract class GeoIP
     {
         /**
          * _ip
@@ -142,7 +143,7 @@
         /**
          * _getIP
          * 
-         * Returns the IP address that the Geo lookup should be based on.
+         * Returns the IP address that the GeoIP lookup should be based on.
          * Defaults to the remote address for the request.
          * 
          * @access  protected

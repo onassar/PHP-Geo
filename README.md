@@ -26,7 +26,7 @@ flow from entering your application.
     require_once APP . '/vendors/PHP-Geo/Geo.class.php';
     
     // display city and country
-    echo Geo::getCity() . ', ' . Geo::getCountry();
+    echo GeoIP::getCity() . ', ' . GeoIP::getCountry();
     exit(0);
 
 ```
