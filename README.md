@@ -23,7 +23,7 @@ flow from entering your application.
 <?php
 
     // dependency
-    require_once APP . '/vendors/PHP-Geo/Geo.class.php';
+    require_once APP . '/vendors/PHP-Geo/GeoIP.class.php';
     
     // display city and country
     echo GeoIP::getCity() . ', ' . GeoIP::getCountry();
