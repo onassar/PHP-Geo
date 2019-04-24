@@ -38,7 +38,7 @@
          * _ip
          * 
          * @access  protected
-         * @var     null|string
+         * @var     null|string (default: null)
          * @static
          */
         protected static $_ip = null;
