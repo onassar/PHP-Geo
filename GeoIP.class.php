@@ -37,8 +37,8 @@
         /**
          * _ip
          * 
-         * @var     null|string
          * @access  protected
+         * @var     null|string
          * @static
          */
         protected static $_ip = null;
@@ -48,8 +48,8 @@
          * 
          * IP lookup caches.
          * 
-         * @var     array (default: array())
          * @access  protected
+         * @var     array (default: array())
          * @static
          */
         protected static $_cache = array();
@@ -209,7 +209,7 @@
          * 
          * @access  protected
          * @static
-         * @return  false|integer
+         * @return  false|int
          */
         protected static function getAreaCode()
         {
