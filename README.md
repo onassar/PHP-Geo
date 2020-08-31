@@ -20,15 +20,9 @@ flow from entering your application.
 ### City/Country Lookup Example
 
 ``` php
-<?php
-
-    // dependency
-    require_once APP . '/vendors/PHP-Geo/GeoIP.class.php';
-    
-    // display city and country
-    echo GeoIP::getCity() . ', ' . GeoIP::getCountry();
-    exit(0);
-
+require_once APP . '/vendors/PHP-Geo/GeoIP.class.php';
+echo GeoIP::getCity() . ', ' . GeoIP::getCountry();
+exit(0);
 ```
 
 While the remote/IP address used for the lookup is determined automagically by
